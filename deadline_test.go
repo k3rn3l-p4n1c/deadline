@@ -1,13 +1,14 @@
 package deadline
 
 import (
-	"testing"
 	"context"
+	"testing"
 	"time"
 )
 
 func TestProperRun(t *testing.T) {
-	ctx, _ := context.WithTimeout(context.Background(), 1*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	defer cancel()
 	i := 0
 	Run(ctx, func(_ context.Context) {
 		i++
@@ -18,7 +19,8 @@ func TestProperRun(t *testing.T) {
 }
 
 func TestTimeout(t *testing.T) {
-	ctx, _ := context.WithTimeout(context.Background(), 1*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	defer cancel()
 	i := 0
 	startTime := time.Now()
 	Run(ctx, func(_ context.Context) {
@@ -35,7 +37,8 @@ func TestTimeout(t *testing.T) {
 }
 
 func TestContextPropagation(t *testing.T) {
-	ctx, _ := context.WithTimeout(context.Background(), 1*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	defer cancel()
 	i := 0
 	Run(ctx, func(innerCtx context.Context) {
 		for {
@@ -55,10 +58,11 @@ func TestContextPropagation(t *testing.T) {
 }
 
 func TestRunOrTimeout(t *testing.T) {
-	ctx, _ := context.WithTimeout(context.Background(), 1*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	defer cancel()
 	afterTimeoutIsExecuted := false
 	RunOr(ctx, func(_ context.Context) {
-		time.Sleep(2*time.Second)
+		time.Sleep(2 * time.Second)
 	}, func() {
 		afterTimeoutIsExecuted = true
 	})
@@ -69,12 +73,12 @@ func TestRunOrTimeout(t *testing.T) {
 	}
 }
 
-
 func TestRunOr(t *testing.T) {
-	ctx, _ := context.WithTimeout(context.Background(), 2*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
 	afterTimeoutIsExecuted := false
 	RunOr(ctx, func(_ context.Context) {
-		time.Sleep(1*time.Second)
+		time.Sleep(1 * time.Second)
 	}, func() {
 		afterTimeoutIsExecuted = true
 	})
