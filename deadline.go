@@ -3,13 +3,16 @@ package deadline
 import (
 	"sync"
 	"context"
+	"github.com/pkg/errors"
 )
 
-func Run(ctx context.Context, function func(ctx context.Context)) {
-	RunOr(ctx, function, func() {})
+var timeoutExceededErr = errors.New("timeout exceeded")
+
+func Run(ctx context.Context, function func(ctx context.Context)) error {
+	return RunOr(ctx, function, func() {})
 }
 
-func RunOr(ctx context.Context, function func(ctx context.Context), afterTimeout func()) {
+func RunOr(ctx context.Context, function func(ctx context.Context), afterTimeout func()) error {
 	var cancel context.CancelFunc
 	ctx, cancel = context.WithCancel(ctx)
 
@@ -31,12 +34,17 @@ func RunOr(ctx context.Context, function func(ctx context.Context), afterTimeout
 
 	select {
 	case <-finishSignal:
-	case <-ctx.Done():
+		lock.Lock()
+		defer lock.Unlock()
+		defer cancel()
 		timeoutExceeded = true
+		return nil
+
+	case <-ctx.Done():
+		lock.Lock()
+		timeoutExceeded = true
+		lock.Unlock()
 		afterTimeout()
+		return timeoutExceededErr
 	}
-	lock.Lock()
-	cancel()
-	timeoutExceeded = true
-	lock.Unlock()
 }
