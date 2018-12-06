@@ -1,7 +1,7 @@
 # DEADLINE!
 
 [![Build Status](https://travis-ci.org/k3rn3l-p4n1c/deadline.svg?branch=master)](https://travis-ci.org/k3rn3l-p4n1c/deadline)
-[![Go Report Card](https://goreportcard.com/badge/github.com/k3rn3l-p4n1c/deadline)](https://goreportcard.com/report/github.com/k3rn3l-p4n1c/deadline)
+[![Go Report Card](https://goreportcard.com/badge/github.com/k3rn3l-p4n1c/deadline?)](https://goreportcard.com/report/github.com/k3rn3l-p4n1c/deadline)
 
 Go package for running functions in a hardly limited time.
 
