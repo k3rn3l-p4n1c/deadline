@@ -1,5 +1,10 @@
 language: go
-
+sudo: false
 go:
   - 1.7
   - 1.9
+  - tip
+before_install:
+  - go get github.com/mattn/goveralls
+script:
+  - $GOPATH/bin/goveralls -service=travis-ci
