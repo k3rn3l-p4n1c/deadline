@@ -28,16 +28,16 @@ func RunOr(ctx context.Context, function func(ctx context.Context), afterTimeout
 		function(ctx)
 		lock.Lock()
 		if !timeoutExceeded {
-			lock.Unlock()
 			finishSignal <- struct{}{}
 		}
+		lock.Unlock()
 	}()
 
 	select {
 	case <-finishSignal:
 		lock.Lock()
-		defer lock.Unlock()
 		timeoutExceeded = true
+		lock.Unlock()
 		return nil
 
 	case <-ctx.Done():
